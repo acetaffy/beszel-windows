@@ -2,7 +2,7 @@ name: Build and Upload Artifact
 
 on:
   push:
-    branches: [ main ]  # 可以根据需要修改分支名
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -17,18 +17,21 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20'  # 指定你需要的 Go 版本
+        go-version: '1.20'
 
     - name: Run make
+      working-directory: ./beszel
       run: make
 
     - name: Build Windows binary
+      working-directory: ./beszel
       run: |
+        mkdir -p build
         CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./build/beszel-agent_windows_amd64 -ldflags "-w -s" beszel/cmd/agent
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: beszel-agent-windows
-        path: build/beszel-agent_windows_amd64
-        retention-days: 90  # 设置保留天数，默认为 90 天
+        path: beszel/build/beszel-agent_windows_amd64
+        retention-days: 90
