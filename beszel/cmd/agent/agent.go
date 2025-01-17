@@ -21,11 +21,20 @@ func main() {
 		os.Exit(0)
 	}
 
-	var pubKey []byte
-	if pubKeyEnv, exists := os.LookupEnv("KEY"); exists {
-		pubKey = []byte(pubKeyEnv)
-	} else {
-		log.Fatal("KEY environment variable is not set")
+	// Try to get the key from the KEY environment variable.
+	pubKey := []byte(os.Getenv("KEY"))
+
+	// If KEY is not set, try to read the key from the file specified by KEY_FILE.
+	if len(pubKey) == 0 {
+		keyFile, exists := os.LookupEnv("KEY_FILE")
+		if !exists {
+			log.Fatal("Must set KEY or KEY_FILE environment variable")
+		}
+		var err error
+		pubKey, err = os.ReadFile(keyFile)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	addr := ":45876"

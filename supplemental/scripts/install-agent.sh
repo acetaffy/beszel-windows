@@ -220,7 +220,7 @@ fi
 echo "Downloading and installing the agent..."
 
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/armv7l/arm/' | sed 's/aarch64/arm64/')
+ARCH=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/armv6l/arm/' -e 's/armv7l/arm/' -e 's/aarch64/arm64/')
 FILE_NAME="beszel-agent_${OS}_${ARCH}.tar.gz"
 LATEST_VERSION=$(curl -s "$GITHUB_API_URL""/repos/henrygd/beszel/releases/latest" | grep -o '"tag_name": "v[^"]*"' | cut -d'"' -f4 | tr -d 'v')
 if [ -z "$LATEST_VERSION" ]; then
@@ -267,7 +267,7 @@ rm -rf "$TEMP_DIR"
 # Modify service installation part, add Alpine check before systemd service creation
 if is_alpine; then
   echo "Creating OpenRC service for Alpine Linux..."
-  cat > /etc/init.d/beszel-agent <<EOF
+  cat >/etc/init.d/beszel-agent <<EOF
 #!/sbin/openrc-run
 
 name="beszel-agent"
@@ -294,11 +294,11 @@ EOF
 
   chmod +x /etc/init.d/beszel-agent
   rc-update add beszel-agent default
-  
+
   # Create log files with proper permissions
   touch /var/log/beszel-agent.log /var/log/beszel-agent.err
   chown beszel:beszel /var/log/beszel-agent.log /var/log/beszel-agent.err
-  
+
   # Start the service
   rc-service beszel-agent restart
 
@@ -316,8 +316,8 @@ EOF
   case "$AUTO_UPDATE" in
   [Yy]*)
     echo "Setting up daily automatic updates for beszel-agent..."
-    
-    cat > /etc/init.d/beszel-agent-update <<EOF
+
+    cat >/etc/init.d/beszel-agent-update <<EOF
 #!/sbin/openrc-run
 
 name="beszel-agent-update"
@@ -393,7 +393,7 @@ Wants=beszel-agent.service
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c '/opt/beszel-agent/beszel-agent update | grep -q "Successfully updated" && systemctl restart beszel-agent'
+ExecStart=/bin/sh -c '/opt/beszel-agent/beszel-agent update | grep -q "Successfully updated" && (echo "Update found, restarting beszel-agent" && systemctl restart beszel-agent) || echo "No updates found"'
 EOF
 
     # Create systemd timer for the daily update

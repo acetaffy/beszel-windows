@@ -5,9 +5,19 @@ export default [
 		e: "🇵🇸",
 	},
 	{
+		lang: "bg",
+		label: "Български",
+		e: "🇧🇬",
+	},
+	{
 		lang: "cs",
 		label: "Čeština",
 		e: "🇨🇿",
+	},
+	{
+		lang: "da",
+		label: "Dansk",
+		e: "🇩🇰",
 	},
 	{
 		lang: "de",
@@ -80,6 +90,11 @@ export default [
 		e: "🇷🇺",
 	},
 	{
+		lang: "sl",
+		label: "Slovenščina",
+		e: "🇸🇮",
+	},
+	{
 		lang: "sv",
 		label: "Svenska",
 		e: "🇸🇪",
@@ -103,5 +118,10 @@ export default [
 		lang: "zh-HK",
 		label: "繁體中文",
 		e: "🇭🇰",
+	},
+	{
+		lang: "zh",
+		label: "繁體中文",
+		e: "🇹🇼",
 	},
 ] as const
